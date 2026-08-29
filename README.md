@@ -1,75 +1,92 @@
-# React + TypeScript + Vite
+# LabTrack — Frontend Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicação web do **LabTrack**, sistema de rastreio de empréstimos de materiais em laboratório, desenvolvido como projeto da disciplina **Projeto e Requisitos de Software** (IFMA).
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- [React](https://react.dev) + [TypeScript](https://www.typescriptlang.org/docs/)
+- [Vite](https://vite.dev) — build tool e servidor de desenvolvimento
+- [TanStack Router](https://tanstack.com/router/latest) — roteamento com file-based routing
+- [TanStack Query](https://tanstack.com/query/latest) — gerenciamento de estado de servidor
+- [Tailwind CSS](https://tailwindcss.com/docs) — estilização utility-first
+- [shadcn/ui](https://ui.shadcn.com) (Radix UI, preset Nova) — componentes de UI
+- ESLint — padronização e qualidade de código
 
-## React Compiler
+## Pré-requisitos
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- [Node.js](https://nodejs.org) (versão 18 ou superior recomendada)
+- npm (instalado junto com o Node.js)
+- Git
 
-## Expanding the ESLint configuration
+## Como clonar o repositório
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Via SSH (recomendado, requer chave SSH configurada na sua conta do GitHub e acesso à organização LabTrack):
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+git clone git@github.com:LabTrack/labtrack-webapp.git
+cd labtrack-webapp
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+## Instalação
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Instale as dependências do projeto:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm install
 ```
+
+## Rodando o projeto
+
+Inicie o servidor de desenvolvimento:
+
+```bash
+npm run dev
+```
+
+O projeto estará disponível em `http://localhost:5173` (ou outra porta, caso a 5173 esteja em uso — o terminal indicará o endereço correto).
+
+## Scripts disponíveis
+
+| Comando | Descrição |
+|---|---|
+| `npm run dev` | Inicia o servidor de desenvolvimento com hot reload |
+| `npm run build` | Gera a build de produção |
+| `npm run preview` | Serve localmente a build de produção gerada |
+| `npm run lint` | Executa o ESLint para checar problemas no código |
+
+## Adicionando componentes do shadcn/ui
+
+Para adicionar novos componentes prontos do shadcn/ui ao projeto:
+
+```bash
+npx shadcn@latest add <nome-do-componente>
+```
+
+Exemplo:
+
+```bash
+npx shadcn@latest add dialog
+```
+
+Os componentes são adicionados diretamente em `src/components/ui/`, com código totalmente editável.
+
+## Estrutura de rotas
+
+O roteamento é feito via **file-based routing** do TanStack Router. Cada arquivo dentro de `src/routes/` representa uma rota da aplicação:
+
+- `src/routes/__root.tsx` — layout raiz da aplicação
+- `src/routes/index.tsx` — rota inicial (`/`)
+
+O arquivo `src/routeTree.gen.ts` é gerado **automaticamente** pelo plugin do TanStack Router a partir dos arquivos em `src/routes/` — não deve ser editado manualmente.
+
+## Path alias
+
+O projeto usa o alias `@/` apontando para a pasta `src/`. Exemplo de uso:
+
+```ts
+import { Button } from "@/components/ui/button"
+```
+
+## Documentação da stack
+
+Para uma visão mais aprofundada sobre cada tecnologia utilizada e as decisões tomadas, consulte a página de pesquisa de desenvolvimento no Notion do time.
