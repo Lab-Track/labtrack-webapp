@@ -25,13 +25,13 @@ export function EquipmentGrid({
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0]?.isIntersecting) onLoadMore()
+        if (entries[0]?.isIntersecting && !isFetchingNextPage) onLoadMore()
       },
       { rootMargin: '200px' }
     )
     observer.observe(sentinel)
     return () => observer.disconnect()
-  }, [hasNextPage, onLoadMore])
+  }, [hasNextPage, isFetchingNextPage, onLoadMore])
 
   if (isLoading) {
     return (
