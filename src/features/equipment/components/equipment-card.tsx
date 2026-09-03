@@ -27,11 +27,21 @@ export function EquipmentCard({
       onClick={() =>
         navigate({ to: '/equipment/$id', params: { id: equipamento.id } })
       }
-      className="flex flex-col overflow-hidden rounded-xl border border-border bg-card text-left transition-shadow hover:shadow-md"
+      className="flex cursor-pointer flex-col overflow-hidden rounded-xl border border-border bg-card text-left transition-shadow hover:shadow-md"
     >
-      <div className={`flex h-28 items-center justify-center ${background}`}>
-        <Icon className="size-8 text-foreground/70" />
-      </div>
+      {equipamento.fotoUrl ? (
+        <img
+          src={equipamento.fotoUrl}
+          alt={equipamento.nome}
+          className="h-28 w-full object-cover"
+        />
+      ) : (
+        <div
+          className={`flex h-28 items-center justify-center ${background}`}
+        >
+          <Icon className="size-8 text-foreground/70" />
+        </div>
+      )}
       <div className="flex flex-col gap-1 p-4">
         <span className="font-medium text-foreground">{equipamento.nome}</span>
         <span className="text-sm text-muted-foreground">

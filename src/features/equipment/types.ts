@@ -13,6 +13,7 @@ export interface Equipamento {
   id: string
   nome: string
   codigo: string
+  fotoUrl: string | null
   status: StatusEquipamento
   laboratorio: string
   bancada: string | null
