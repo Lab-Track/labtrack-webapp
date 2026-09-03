@@ -70,7 +70,7 @@ export function EquipmentFilters({
           onProjetoIdChange(value === 'all' ? null : value)
         }
       >
-        <SelectTrigger className="h-10 w-48">
+        <SelectTrigger className="w-48 data-[size=default]:h-10">
           <SelectValue placeholder="Todos os projetos" />
         </SelectTrigger>
         <SelectContent>

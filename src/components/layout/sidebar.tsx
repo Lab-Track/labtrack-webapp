@@ -40,11 +40,11 @@ const SYSTEM_NAV: NavItem[] = [
   { label: 'Configurações', icon: Settings },
 ]
 
-function NavRow({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
+function NavRow({ item, expanded }: { item: NavItem; expanded: boolean }) {
   const content = (
     <>
       <item.icon className="size-4 shrink-0" />
-      {!collapsed ? (
+      {expanded ? (
         <>
           <span className="flex-1">{item.label}</span>
           {item.badge ? (
@@ -59,7 +59,7 @@ function NavRow({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
 
   const rowClassName = cn(
     'flex items-center gap-2.5 rounded-lg py-2 text-sm transition-colors',
-    collapsed ? 'justify-center px-2' : 'px-3'
+    expanded ? 'px-3' : 'justify-center px-2'
   )
 
   if (!item.to) {
@@ -69,7 +69,7 @@ function NavRow({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
           rowClassName,
           'cursor-default text-sidebar-foreground/50'
         )}
-        title={collapsed ? item.label : undefined}
+        title={expanded ? undefined : item.label}
       >
         {content}
       </div>
@@ -81,15 +81,15 @@ function NavRow({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
       to={item.to}
       className={cn(
         rowClassName,
-        'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+        'cursor-pointer text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground'
       )}
       activeProps={{
         className: cn(
           rowClassName,
-          'bg-sidebar-primary text-sidebar-primary-foreground'
+          'cursor-pointer bg-sidebar-primary text-sidebar-primary-foreground'
         ),
       }}
-      title={collapsed ? item.label : undefined}
+      title={expanded ? undefined : item.label}
     >
       {content}
     </Link>
@@ -104,6 +104,7 @@ export function Sidebar() {
       return false
     }
   })
+  const [hovering, setHovering] = useState(false)
 
   useEffect(() => {
     try {
@@ -113,22 +114,26 @@ export function Sidebar() {
     }
   }, [collapsed])
 
+  const expanded = !collapsed || hovering
+
   return (
     <aside
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
       className={cn(
         'flex h-screen shrink-0 flex-col justify-between bg-sidebar px-4 py-5 text-sidebar-foreground transition-[width] duration-200',
-        collapsed ? 'w-20' : 'w-72'
+        expanded ? 'w-72' : 'w-20'
       )}
     >
       <div className="flex flex-col gap-6">
         <div
           className={cn(
             'flex items-center gap-2',
-            collapsed ? 'flex-col' : 'px-2'
+            expanded ? 'px-2' : 'flex-col'
           )}
         >
-          <Logo className={collapsed ? 'h-10 w-auto' : 'h-14 w-auto'} />
-          {!collapsed ? (
+          <Logo className={expanded ? 'h-14 w-auto' : 'h-10 w-auto'} />
+          {expanded ? (
             <div className="flex flex-1 flex-col">
               <span className="text-sm font-semibold text-sidebar-foreground">
                 LabTrack
@@ -141,25 +146,25 @@ export function Sidebar() {
           <button
             type="button"
             onClick={() => setCollapsed((value) => !value)}
-            className="shrink-0 rounded-lg p-1.5 text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
-            aria-label={collapsed ? 'Expandir menu' : 'Recolher menu'}
+            className="shrink-0 cursor-pointer rounded-lg p-1.5 text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
+            aria-label={expanded ? 'Recolher menu' : 'Expandir menu'}
           >
-            {collapsed ? (
-              <PanelLeftOpen className="size-4" />
-            ) : (
+            {expanded ? (
               <PanelLeftClose className="size-4" />
+            ) : (
+              <PanelLeftOpen className="size-4" />
             )}
           </button>
         </div>
 
         <nav className="flex flex-col gap-1">
           {MAIN_NAV.map((item) => (
-            <NavRow key={item.label} item={item} collapsed={collapsed} />
+            <NavRow key={item.label} item={item} expanded={expanded} />
           ))}
         </nav>
 
         <div className="flex flex-col gap-1">
-          {!collapsed ? (
+          {expanded ? (
             <span className="px-3 text-[11px] font-medium tracking-wide text-sidebar-foreground/40">
               SISTEMA
             </span>
@@ -167,7 +172,7 @@ export function Sidebar() {
             <div className="mx-2 h-px bg-sidebar-border" />
           )}
           {SYSTEM_NAV.map((item) => (
-            <NavRow key={item.label} item={item} collapsed={collapsed} />
+            <NavRow key={item.label} item={item} expanded={expanded} />
           ))}
         </div>
       </div>
@@ -175,14 +180,14 @@ export function Sidebar() {
       <div
         className={cn(
           'flex items-center gap-2 rounded-lg px-2 py-2',
-          collapsed && 'justify-center px-0'
+          !expanded && 'justify-center px-0'
         )}
-        title={collapsed ? 'Kênia Oliveira · Técnica de laboratório' : undefined}
+        title={expanded ? undefined : 'Kênia Oliveira · Técnica de laboratório'}
       >
         <Avatar size="sm">
           <AvatarFallback>KO</AvatarFallback>
         </Avatar>
-        {!collapsed ? (
+        {expanded ? (
           <div className="flex flex-col">
             <span className="text-sm text-sidebar-foreground">
               Kênia Oliveira
