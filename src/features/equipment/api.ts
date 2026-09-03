@@ -1,0 +1,115 @@
+import type { Equipamento, Projeto, StatusEquipamento } from './types'
+import { MOCK_EQUIPAMENTOS, MOCK_PROJETOS } from './mock-data'
+
+export const DEFAULT_PAGE_SIZE = 4
+
+const API_URL = import.meta.env.VITE_API_URL
+const USE_MOCK = import.meta.env.VITE_USE_MOCK_API !== 'false'
+const MOCK_DELAY_MS = 300
+
+export interface EquipamentosPage {
+  items: Equipamento[]
+  page: number
+  pageSize: number
+  total: number
+  totalPages: number
+}
+
+export interface FetchEquipamentosParams {
+  status?: StatusEquipamento
+  search?: string
+  projetoId?: string
+  page?: number
+  pageSize?: number
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+function getAuthToken(): string | null {
+  return null
+}
+
+function buildAuthHeaders(): HeadersInit {
+  const token = getAuthToken()
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
+
+function matchesFilters(
+  equipamento: Equipamento,
+  params: FetchEquipamentosParams
+): boolean {
+  if (params.status && equipamento.status !== params.status) return false
+  if (params.projetoId && equipamento.projeto?.id !== params.projetoId) {
+    return false
+  }
+  if (params.search) {
+    const term = params.search.trim().toLowerCase()
+    const matchesNome = equipamento.nome.toLowerCase().includes(term)
+    const matchesCodigo = equipamento.codigo.toLowerCase().includes(term)
+    if (!matchesNome && !matchesCodigo) return false
+  }
+  return true
+}
+
+async function fetchEquipamentosMock(
+  params: FetchEquipamentosParams
+): Promise<EquipamentosPage> {
+  await delay(MOCK_DELAY_MS)
+  const page = params.page ?? 1
+  const pageSize = params.pageSize ?? DEFAULT_PAGE_SIZE
+  const filtered = MOCK_EQUIPAMENTOS.filter((item) =>
+    matchesFilters(item, params)
+  )
+  const start = (page - 1) * pageSize
+  const items = filtered.slice(start, start + pageSize)
+  const total = filtered.length
+
+  return {
+    items,
+    page,
+    pageSize,
+    total,
+    totalPages: Math.max(1, Math.ceil(total / pageSize)),
+  }
+}
+
+async function fetchProjetosMock(): Promise<Projeto[]> {
+  await delay(MOCK_DELAY_MS)
+  return MOCK_PROJETOS
+}
+
+export async function fetchEquipamentos(
+  params: FetchEquipamentosParams = {}
+): Promise<EquipamentosPage> {
+  if (USE_MOCK) return fetchEquipamentosMock(params)
+
+  const searchParams = new URLSearchParams()
+  if (params.status) searchParams.set('status', params.status)
+  if (params.search) searchParams.set('search', params.search)
+  if (params.projetoId) searchParams.set('projetoId', params.projetoId)
+  searchParams.set('page', String(params.page ?? 1))
+  searchParams.set('pageSize', String(params.pageSize ?? DEFAULT_PAGE_SIZE))
+
+  const response = await fetch(
+    `${API_URL}/api/equipamentos?${searchParams.toString()}`,
+    { headers: buildAuthHeaders() }
+  )
+  if (!response.ok) {
+    throw new Error(`Falha ao buscar equipamentos: ${response.status}`)
+  }
+  return response.json()
+}
+
+export async function fetchProjetos(): Promise<Projeto[]> {
+  if (USE_MOCK) return fetchProjetosMock()
+
+  const response = await fetch(`${API_URL}/api/projetos`, {
+    headers: buildAuthHeaders(),
+  })
+  if (!response.ok) {
+    throw new Error(`Falha ao buscar projetos: ${response.status}`)
+  }
+  return response.json()
+}
