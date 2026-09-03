@@ -4,7 +4,6 @@ import {
   Bell,
   Cpu,
   FileText,
-  FlaskConical,
   History,
   LayoutDashboard,
   Settings,
@@ -13,6 +12,7 @@ import {
 import type { ComponentType } from 'react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
+import { Logo } from './logo'
 
 interface NavItem {
   label: string
@@ -77,7 +77,7 @@ export function Sidebar() {
     <aside className="flex h-screen w-64 shrink-0 flex-col justify-between bg-sidebar px-4 py-5 text-sidebar-foreground">
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-2 px-2">
-          <FlaskConical className="size-6 text-sidebar-primary" />
+          <Logo className="h-10 w-auto" />
           <div className="flex flex-col">
             <span className="text-sm font-semibold text-sidebar-foreground">
               LabTrack
