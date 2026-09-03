@@ -1,13 +1,17 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
+@import "@fontsource/poppins/300.css";
+@import "@fontsource/poppins/400.css";
+@import "@fontsource/poppins/500.css";
+@import "@fontsource/poppins/600.css";
+@import "@fontsource/poppins/700.css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
     --font-heading: var(--font-sans);
-    --font-sans: 'Geist Variable', sans-serif;
+    --font-sans: 'Poppins', sans-serif;
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -49,38 +53,38 @@
 }
 
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.541 0.281 293);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.541 0.281 293 / 45%);
+    --background: #F8F8FC;
+    --foreground: #060E25;
+    --card: #FFFFFF;
+    --card-foreground: #060E25;
+    --popover: #FFFFFF;
+    --popover-foreground: #060E25;
+    --primary: #6C5CE7;
+    --primary-foreground: #FFFFFF;
+    --secondary: #F2F2F9;
+    --secondary-foreground: #060E25;
+    --muted: #F2F2F9;
+    --muted-foreground: #7C87A6;
+    --accent: #EDEEFF;
+    --accent-foreground: #060E25;
+    --destructive: #D6293E;
+    --border: #C7CCDE;
+    --input: #C7CCDE;
+    --ring: rgb(108 92 231 / 45%);
     --chart-1: oklch(0.87 0 0);
     --chart-2: oklch(0.556 0 0);
     --chart-3: oklch(0.439 0 0);
     --chart-4: oklch(0.371 0 0);
     --chart-5: oklch(0.269 0 0);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.16 0.04 292);
-    --sidebar-foreground: oklch(0.92 0.02 292);
-    --sidebar-primary: oklch(0.541 0.281 293);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.24 0.05 292);
-    --sidebar-accent-foreground: oklch(0.96 0.02 292);
-    --sidebar-border: oklch(1 0 0 / 8%);
-    --sidebar-ring: oklch(0.541 0.281 293 / 45%);
+    --radius: 0.75rem;
+    --sidebar: #060E25;
+    --sidebar-foreground: #F8F8FC;
+    --sidebar-primary: #6C5CE7;
+    --sidebar-primary-foreground: #FFFFFF;
+    --sidebar-accent: #171B28;
+    --sidebar-accent-foreground: #F8F8FC;
+    --sidebar-border: rgb(255 255 255 / 8%);
+    --sidebar-ring: rgb(108 92 231 / 45%);
 }
 
 .dark {

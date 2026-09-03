@@ -7,23 +7,23 @@ const STATUS_CONFIG: Record<
 > = {
   DISPONIVEL: {
     label: 'Disponível',
-    dot: 'bg-emerald-500',
-    text: 'text-emerald-700 dark:text-emerald-400',
+    dot: 'bg-[#178A4C]',
+    text: 'text-[#178A4C]',
   },
   EMPRESTADO: {
     label: 'Emprestado',
-    dot: 'bg-violet-500',
-    text: 'text-violet-700 dark:text-violet-400',
+    dot: 'bg-[#6C5CE7]',
+    text: 'text-[#6C5CE7]',
   },
   MANUTENCAO: {
     label: 'Manutenção',
-    dot: 'bg-amber-500',
-    text: 'text-amber-700 dark:text-amber-400',
+    dot: 'bg-[#B4740E]',
+    text: 'text-[#B4740E]',
   },
   INATIVO: {
     label: 'Inativo',
-    dot: 'bg-neutral-400',
-    text: 'text-neutral-600 dark:text-neutral-400',
+    dot: 'bg-[#7C87A6]',
+    text: 'text-[#7C87A6]',
   },
 }
 

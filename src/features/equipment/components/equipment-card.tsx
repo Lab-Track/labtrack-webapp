@@ -5,10 +5,10 @@ import type { Equipamento } from '../types'
 import { StatusBadge } from './status-badge'
 
 const CARD_STYLES: { background: string; Icon: ComponentType<{ className?: string }> }[] = [
-  { background: 'bg-violet-100 dark:bg-violet-500/10', Icon: Cpu },
-  { background: 'bg-emerald-100 dark:bg-emerald-500/10', Icon: Puzzle },
-  { background: 'bg-neutral-100 dark:bg-neutral-500/10', Icon: Gauge },
-  { background: 'bg-orange-100 dark:bg-orange-500/10', Icon: Radar },
+  { background: 'bg-[#EDEEFF]', Icon: Cpu },
+  { background: 'bg-[#DCFCE7]', Icon: Puzzle },
+  { background: 'bg-[#F2F2F9]', Icon: Gauge },
+  { background: 'bg-[#FEF3C7]', Icon: Radar },
 ]
 
 export function EquipmentCard({
