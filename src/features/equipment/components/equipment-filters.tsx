@@ -40,7 +40,7 @@ export function EquipmentFilters({
           value={search}
           onChange={(event) => onSearchChange(event.target.value)}
           placeholder="Buscar por nome ou identificador"
-          className="h-10 pl-8"
+          className="h-10 pl-8 rounded-full"
         />
       </div>
 
@@ -48,6 +48,7 @@ export function EquipmentFilters({
         type="button"
         variant={status === null ? 'default' : 'outline'}
         size="lg"
+        className='rounded-full'
         onClick={() => onStatusChange(null)}
       >
         Todos ({total})
@@ -58,6 +59,7 @@ export function EquipmentFilters({
           type="button"
           variant={status === option.value ? 'default' : 'outline'}
           size="lg"
+          className='rounded-full'
           onClick={() => onStatusChange(option.value)}
         >
           {option.label}
@@ -70,7 +72,7 @@ export function EquipmentFilters({
           onProjetoIdChange(value === 'all' ? null : value)
         }
       >
-        <SelectTrigger className="w-48 data-[size=default]:h-10">
+        <SelectTrigger className="w-48 rounded-full data-[size=default]:h-10">
           <SelectValue placeholder="Todos os projetos" />
         </SelectTrigger>
         <SelectContent>
@@ -83,7 +85,7 @@ export function EquipmentFilters({
         </SelectContent>
       </Select>
 
-      <Button type="button" className="ml-auto" size="lg">
+      <Button type="button" className="ml-auto h-11 px-5 text-base" size="lg">
         + Cadastrar equipamento
       </Button>
     </div>

@@ -26,15 +26,6 @@ export function EquipmentPage() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <div className="border-b border-border px-6 py-5">
-        <h1 className="text-2xl font-semibold text-foreground">
-          Equipamentos
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Consulte, cadastre e altere o status dos equipamentos.
-        </p>
-      </div>
-
       <EquipmentFilters
         search={search}
         onSearchChange={setSearch}
