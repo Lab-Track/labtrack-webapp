@@ -6,16 +6,16 @@ import {
   FileText,
   History,
   LayoutDashboard,
-  PanelLeftClose,
+  LogOut,
   PanelLeftOpen,
+  Search,
   Settings,
   Users,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { ComponentType } from 'react'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
-import { Logo } from './logo'
+import { Logo, LogoFull } from './logo'
 
 const SIDEBAR_COLLAPSED_KEY = 'labtrack-sidebar-collapsed'
 
@@ -26,16 +26,13 @@ interface NavItem {
   badge?: number
 }
 
-const MAIN_NAV: NavItem[] = [
+const NAV_ITEMS: NavItem[] = [
   { label: 'Dashboard', icon: LayoutDashboard },
   { label: 'Equipamentos', icon: Cpu, to: '/equipment' },
   { label: 'Empréstimos', icon: ArrowLeftRight },
   { label: 'Alunos', icon: Users },
   { label: 'Histórico', icon: History },
   { label: 'Alertas', icon: Bell, badge: 3 },
-]
-
-const SYSTEM_NAV: NavItem[] = [
   { label: 'Relatórios', icon: FileText },
   { label: 'Configurações', icon: Settings },
 ]
@@ -43,10 +40,10 @@ const SYSTEM_NAV: NavItem[] = [
 function NavRow({ item, expanded }: { item: NavItem; expanded: boolean }) {
   const content = (
     <>
-      <item.icon className="size-4 shrink-0" />
+      <item.icon className="size-5 shrink-0" />
       {expanded ? (
         <>
-          <span className="flex-1">{item.label}</span>
+          <span className="flex-1 font-medium">{item.label}</span>
           {item.badge ? (
             <span className="text-xs text-sidebar-foreground/60">
               · {item.badge}
@@ -58,7 +55,7 @@ function NavRow({ item, expanded }: { item: NavItem; expanded: boolean }) {
   )
 
   const rowClassName = cn(
-    'flex items-center gap-2.5 rounded-lg py-2 text-sm transition-colors',
+    'flex items-center gap-3 rounded-lg py-2.5 text-[15px] transition-colors',
     expanded ? 'px-3' : 'justify-center px-2'
   )
 
@@ -121,83 +118,64 @@ export function Sidebar() {
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={() => setHovering(false)}
       className={cn(
-        'flex h-screen shrink-0 flex-col justify-between bg-sidebar px-4 py-5 text-sidebar-foreground transition-[width] duration-200',
+        'relative flex h-screen shrink-0 flex-col justify-between bg-sidebar px-4 py-5 text-sidebar-foreground transition-[width] duration-400 ',
         expanded ? 'w-72' : 'w-20'
       )}
     >
+      {expanded ? (
+        <button
+          type="button"
+          onClick={() => setCollapsed((value) => !value)}
+          className="absolute right-3 top-3 shrink-0 cursor-pointer rounded-lg p-1.5 text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
+          aria-label={expanded ? 'Recolher menu' : 'Expandir menu'}
+        >
+          <PanelLeftOpen 
+            className={cn('size-5 transition-transform duration-200', expanded && 'rotate-180' )}
+          /> 
+        </button>
+      ) : null}
+      
       <div className="flex flex-col gap-6">
         <div
           className={cn(
-            'flex items-center gap-2',
-            expanded ? 'px-2' : 'flex-col'
+            'flex flex-col gap-4',
+            expanded ? 'px-2 pt-8' : 'items-center'
           )}
         >
-          <Logo className={expanded ? 'h-14 w-auto' : 'h-10 w-auto'} />
           {expanded ? (
-            <div className="flex flex-1 flex-col">
-              <span className="text-sm font-semibold text-sidebar-foreground">
-                LabTrack
-              </span>
-              <span className="text-[11px] text-sidebar-foreground/50">
-                Rastreio de equipamentos de laboratório
-              </span>
+            <div className='flex justify-center px-4 py-4'>
+              <LogoFull className="h-18 w-auto" />              
+            </div>
+          ) : (
+            <div className='flex justify-center'>
+              <Logo className="h-14 w-auto" />
+            </div>
+          )}
+
+          {expanded ? (
+            <div className="flex items-center gap-2 rounded-full bg-sidebar-accent px-3 py-2 text-sidebar-foreground/50">
+              <Search className="size-4 shrink-0" />
+              <span className="text-sm">Buscar</span>
             </div>
           ) : null}
-          <button
-            type="button"
-            onClick={() => setCollapsed((value) => !value)}
-            className="shrink-0 cursor-pointer rounded-lg p-1.5 text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
-            aria-label={expanded ? 'Recolher menu' : 'Expandir menu'}
-          >
-            {expanded ? (
-              <PanelLeftClose className="size-4" />
-            ) : (
-              <PanelLeftOpen className="size-4" />
-            )}
-          </button>
         </div>
 
-        <nav className="flex flex-col gap-1">
-          {MAIN_NAV.map((item) => (
+        <nav className="flex flex-col gap-1.5">
+          {NAV_ITEMS.map((item) => (
             <NavRow key={item.label} item={item} expanded={expanded} />
           ))}
         </nav>
-
-        <div className="flex flex-col gap-1">
-          {expanded ? (
-            <span className="px-3 text-[11px] font-medium tracking-wide text-sidebar-foreground/40">
-              SISTEMA
-            </span>
-          ) : (
-            <div className="mx-2 h-px bg-sidebar-border" />
-          )}
-          {SYSTEM_NAV.map((item) => (
-            <NavRow key={item.label} item={item} expanded={expanded} />
-          ))}
-        </div>
       </div>
-
-      <div
-        className={cn(
-          'flex items-center gap-2 rounded-lg px-2 py-2',
-          !expanded && 'justify-center px-0'
+      <button type='button' className={cn(
+        'flex items-center gap-2 rounded-lg py-2 px-2 transition-colors text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground',
+        !expanded && 'justify-center px-0'
         )}
-        title={expanded ? undefined : 'Kênia Oliveira · Técnica de laboratório'}
+        aria-label="Sair"
+        title={expanded ? undefined : 'Sair'}
       >
-        <Avatar size="sm">
-          <AvatarFallback>KO</AvatarFallback>
-        </Avatar>
-        {expanded ? (
-          <div className="flex flex-col">
-            <span className="text-sm text-sidebar-foreground">
-              Kênia Oliveira
-            </span>
-            <span className="text-xs text-sidebar-foreground/50">
-              Técnica de laboratório
-            </span>
-          </div>
-        ) : null}
-      </div>
+        <LogOut className="size-5 shrink-0" />
+        {expanded ? <span className="text-sm">Sair da conta</span> : null}
+      </button>
     </aside>
   )
 }
