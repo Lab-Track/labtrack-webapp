@@ -1,8 +1,8 @@
 import type { Equipamento, HistoricoEquipamentoItem, Projeto } from './types'
 
 export const MOCK_PROJETOS: Projeto[] = [
-  { id: 'proj-1', nome: 'Robótica Educacional' },
-  { id: 'proj-2', nome: 'Iniciação Científica - Sensores' },
+  { id: 'proj-1', nome: 'Robótica Educacional', professorResponsavel: 'Prof. Simone' },
+  { id: 'proj-2', nome: 'Iniciação Científica - Sensores', professorResponsavel: 'Prof.ª Daniel' },
 ]
 
 export const MOCK_EQUIPAMENTOS: Equipamento[] = [
