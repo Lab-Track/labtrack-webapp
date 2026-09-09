@@ -7,6 +7,7 @@ export type StatusEquipamento =
 export interface Projeto {
   id: string
   nome: string
+  professorResponsavel: string | null
 }
 
 export interface Equipamento {
