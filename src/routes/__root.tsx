@@ -6,7 +6,7 @@ export const Route = createRootRoute({
   component: () => (
     <AppShell>
       <Outlet />
-      <Toaster />
+      <Toaster position="top-center" richColors />
     </AppShell>
   ),
 })
