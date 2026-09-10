@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils'
 import type { StatusEquipamento } from '../types'
 
-const STATUS_CONFIG: Record<
+export const STATUS_CONFIG: Record<
   StatusEquipamento,
   { label: string; dot: string; text: string; background: string }
 > = {
