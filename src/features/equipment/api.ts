@@ -152,3 +152,51 @@ export async function fetchProjetos(): Promise<Projeto[]> {
   }
   return response.json()
 }
+
+async function updateStatusEquipamentoMock(
+  id: string,
+  status: StatusEquipamento
+): Promise<Equipamento> {
+  await delay(MOCK_DELAY_MS)
+  const index = MOCK_EQUIPAMENTOS.findIndex((item) => item.id === id)
+  if (index === -1) throw new Error(`Equipamento não encontrado: ${id}`)
+  const equipamento = { ...MOCK_EQUIPAMENTOS[index], status }
+  MOCK_EQUIPAMENTOS[index] = equipamento
+  return equipamento
+}
+
+async function excluirEquipamentoMock(id: string): Promise<void> {
+  await delay(MOCK_DELAY_MS)
+  const index = MOCK_EQUIPAMENTOS.findIndex((item) => item.id === id)
+  if (index === -1) throw new Error(`Equipamento não encontrado: ${id}`)
+  MOCK_EQUIPAMENTOS.splice(index, 1)
+}
+
+export async function updateStatusEquipamento(
+  id: string,
+  status: StatusEquipamento
+): Promise<Equipamento> {
+  if (USE_MOCK) return updateStatusEquipamentoMock(id, status)
+
+  const response = await fetch(`${API_URL}/api/equipment/${id}/status`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...buildAuthHeaders() },
+    body: JSON.stringify({ status }),
+  })
+  if (!response.ok) {
+    throw new Error(`Falha ao atualizar status do equipamento ${id}: ${response.status}`)
+  }
+  return response.json()
+}
+
+export async function excluirEquipamento(id: string): Promise<void> {
+  if (USE_MOCK) return excluirEquipamentoMock(id)
+
+  const response = await fetch(`${API_URL}/api/equipment/${id}`, {
+    method: 'DELETE',
+    headers: buildAuthHeaders(),
+  })
+  if (!response.ok) {
+    throw new Error(`Falha ao excluir equipamento ${id}: ${response.status}`)
+  }
+}
