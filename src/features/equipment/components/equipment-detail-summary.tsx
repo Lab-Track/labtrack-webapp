@@ -45,7 +45,7 @@ export function EquipmentDetailSummary({
             <Cpu className="size-7 text-foreground/70" />
           </div>
         )}
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col items-start gap-1">
           <span className="text-xl font-semibold text-foreground">
             {equipamento.nome}
           </span>
