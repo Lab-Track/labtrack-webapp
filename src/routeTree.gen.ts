@@ -9,86 +9,135 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as EquipmentIndexRouteImport } from './routes/equipment.index'
-import { Route as EquipmentIdRouteImport } from './routes/equipment.$id'
+import { Route as AppRouteRouteImport } from './routes/_app/route'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AppIndexRouteImport } from './routes/_app/index'
+import { Route as AppEquipmentIndexRouteImport } from './routes/_app/equipment.index'
+import { Route as AppEquipmentIdRouteImport } from './routes/_app/equipment.$id'
 
-const IndexRoute = IndexRouteImport.update({
+const AppRouteRoute = AppRouteRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AppRouteRoute,
 } as any)
-const EquipmentIndexRoute = EquipmentIndexRouteImport.update({
+const AppEquipmentIndexRoute = AppEquipmentIndexRouteImport.update({
   id: '/equipment/',
   path: '/equipment/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AppRouteRoute,
 } as any)
-const EquipmentIdRoute = EquipmentIdRouteImport.update({
+const AppEquipmentIdRoute = AppEquipmentIdRouteImport.update({
   id: '/equipment/$id',
   path: '/equipment/$id',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AppRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/equipment/$id': typeof EquipmentIdRoute
-  '/equipment/': typeof EquipmentIndexRoute
+  '/': typeof AppIndexRoute
+  '/login': typeof LoginRoute
+  '/equipment/$id': typeof AppEquipmentIdRoute
+  '/equipment/': typeof AppEquipmentIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/equipment/$id': typeof EquipmentIdRoute
-  '/equipment': typeof EquipmentIndexRoute
+  '/login': typeof LoginRoute
+  '/': typeof AppIndexRoute
+  '/equipment/$id': typeof AppEquipmentIdRoute
+  '/equipment': typeof AppEquipmentIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/equipment/$id': typeof EquipmentIdRoute
-  '/equipment/': typeof EquipmentIndexRoute
+  '/_app': typeof AppRouteRouteWithChildren
+  '/login': typeof LoginRoute
+  '/_app/': typeof AppIndexRoute
+  '/_app/equipment/$id': typeof AppEquipmentIdRoute
+  '/_app/equipment/': typeof AppEquipmentIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/equipment/$id' | '/equipment/'
+  fullPaths: '/' | '/login' | '/equipment/$id' | '/equipment/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/equipment/$id' | '/equipment'
-  id: '__root__' | '/' | '/equipment/$id' | '/equipment/'
+  to: '/login' | '/' | '/equipment/$id' | '/equipment'
+  id:
+    | '__root__'
+    | '/_app'
+    | '/login'
+    | '/_app/'
+    | '/_app/equipment/$id'
+    | '/_app/equipment/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  EquipmentIdRoute: typeof EquipmentIdRoute
-  EquipmentIndexRoute: typeof EquipmentIndexRoute
+  AppRouteRoute: typeof AppRouteRouteWithChildren
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/': {
+      id: '/_app/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/equipment/': {
-      id: '/equipment/'
+    '/_app/equipment/': {
+      id: '/_app/equipment/'
       path: '/equipment'
       fullPath: '/equipment/'
-      preLoaderRoute: typeof EquipmentIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppEquipmentIndexRouteImport
+      parentRoute: typeof AppRouteRoute
     }
-    '/equipment/$id': {
-      id: '/equipment/$id'
+    '/_app/equipment/$id': {
+      id: '/_app/equipment/$id'
       path: '/equipment/$id'
       fullPath: '/equipment/$id'
-      preLoaderRoute: typeof EquipmentIdRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppEquipmentIdRouteImport
+      parentRoute: typeof AppRouteRoute
     }
   }
 }
 
+interface AppRouteRouteChildren {
+  AppIndexRoute: typeof AppIndexRoute
+  AppEquipmentIdRoute: typeof AppEquipmentIdRoute
+  AppEquipmentIndexRoute: typeof AppEquipmentIndexRoute
+}
+
+const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppIndexRoute: AppIndexRoute,
+  AppEquipmentIdRoute: AppEquipmentIdRoute,
+  AppEquipmentIndexRoute: AppEquipmentIndexRoute,
+}
+
+const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
+  AppRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  EquipmentIdRoute: EquipmentIdRoute,
-  EquipmentIndexRoute: EquipmentIndexRoute,
+  AppRouteRoute: AppRouteRouteWithChildren,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
