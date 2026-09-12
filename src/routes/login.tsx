@@ -7,6 +7,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card } from '@/components/ui/card'
+import { Logo, LogoFull } from '@/components/layout/logo'
+import textureDots from '@/assets/login/texture-dots.svg'
+import glowEllipse from '@/assets/login/glow-ellipse.svg'
 
 export const Route = createFileRoute('/login')({
   component: Login,
@@ -39,34 +42,43 @@ function Login() {
   return (
     <div className="flex min-h-screen">
       {/* Painel esquerdo - institucional */}
-      <div className="hidden flex-1 flex-col justify-between bg-secondary p-3xl text-secondary-foreground lg:flex">
-        <div className="flex items-center gap-xs">
-          {/* logo aqui, ex: <img src={logo} className="h-8" /> */}
-          <span className="text-h2 font-semibold">
-            Lab<span className="text-primary">Track</span>
-          </span>
-        </div>
+      <div className="relative hidden flex-1 flex-col justify-between overflow-hidden bg-sidebar p-3xl text-secondary-foreground lg:flex">
+        <img
+          src={textureDots}
+          alt=""
+          className="pointer-events-none absolute inset-0 size-full object-cover"
+        />
 
-        <div className="flex flex-col items-center gap-lg text-center">
+        <LogoFull className="relative h-14 w-auto" />
+
+        <div className="relative flex flex-col items-center gap-lg text-center">
+          <div className="relative mb-xs flex size-24 items-center justify-center">
+            <img
+              src={glowEllipse}
+              alt=""
+              className="pointer-events-none absolute inset-0 size-full"
+            />
+            <Logo className="relative h-14 w-auto" />
+          </div>
           <h1 className="text-h1 font-semibold">
             Controle, localize e{' '}
             <span className="text-primary">rastreie</span> cada equipamento
             do laboratório.
           </h1>
-          <p className="max-w-md text-body text-muted-foreground">
+          <p className="max-w-[28rem] text-body text-muted-foreground">
             Empréstimos, devoluções e histórico dos equipamentos do
             laboratório em um só lugar — sincronizado com o app do técnico.
           </p>
         </div>
 
-        <div className="flex gap-sm">
-          <div className="rounded-full bg-secondary-foreground/10 px-md py-xs text-body-sm">
+        <div className="relative flex gap-sm">
+          <div className="rounded-md border border-white/10 bg-white/5 px-md py-xs text-body-sm">
             <strong>128</strong> equipamentos
           </div>
-          <div className="rounded-full bg-secondary-foreground/10 px-md py-xs text-body-sm">
+          <div className="rounded-md border border-white/10 bg-white/5 px-md py-xs text-body-sm">
             <strong>36</strong> emprestados agora
           </div>
-          <div className="rounded-full bg-secondary-foreground/10 px-md py-xs text-body-sm">
+          <div className="rounded-md border border-white/10 bg-white/5 px-md py-xs text-body-sm">
             <strong>3</strong> pendências
           </div>
         </div>
@@ -74,19 +86,21 @@ function Login() {
 
       {/* Painel direito - form */}
       <div className="flex flex-1 items-center justify-center bg-muted p-lg">
-        <Card className="w-full max-w-sm p-xl">
+        <Card className="w-full max-w-[24rem] p-xl">
           <div className="mb-md flex size-10 items-center justify-center rounded-md bg-primary-soft">
-            {/* ícone aqui */}
+            <Logo className="h-6 w-auto" />
           </div>
 
-          <h2 className="text-h1 font-semibold">Entrar</h2>
+          <h2 className="text-h2 font-semibold">Entrar</h2>
           <p className="mb-lg text-body-sm text-muted-foreground">
             Acesso restrito a técnicos de laboratório cadastrados.
           </p>
 
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-md">
             <div className="flex flex-col gap-xs">
-              <Label htmlFor="email">E-mail institucional</Label>
+              <Label htmlFor="email" className="text-body-sm text-muted-foreground">
+                E-mail institucional
+              </Label>
               <div className="relative">
                 <Mail className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-placeholder" />
                 <Input
@@ -107,7 +121,9 @@ function Login() {
 
             <div className="flex flex-col gap-xs">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password">Senha</Label>
+                <Label htmlFor="password" className="text-body-sm text-muted-foreground">
+                  Senha
+                </Label>
                 <a href="#" className="text-body-sm text-primary hover:underline">
                   Esqueci minha senha
                 </a>
@@ -139,7 +155,7 @@ function Login() {
             </Button>
           </form>
 
-          <div className="mt-lg flex gap-xs rounded-md bg-primary-soft p-sm text-body-sm text-primary">
+          <div className="mt-lg flex gap-xs rounded-md border border-dashed border-border bg-muted p-sm text-body-sm text-muted-foreground">
             <Info className="size-4 shrink-0" />
             <span>
               Protótipo de validação — clique em "Entrar" com os dados
