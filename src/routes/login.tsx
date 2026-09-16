@@ -42,7 +42,7 @@ function Login() {
   return (
     <div className="flex min-h-screen">
       {/* Painel esquerdo - institucional */}
-      <div className="relative hidden flex-1 flex-col justify-between overflow-hidden bg-sidebar p-3xl text-secondary-foreground lg:flex">
+      <div className="relative hidden flex-1 flex-col justify-between overflow-hidden bg-sidebar p-8 text-secondary-foreground lg:flex">
         <img
           src={textureDots}
           alt=""
@@ -51,8 +51,8 @@ function Login() {
 
         <LogoFull className="relative h-14 w-auto" />
 
-        <div className="relative flex flex-col items-center gap-lg text-center">
-          <div className="relative mb-xs flex size-24 items-center justify-center">
+        <div className="relative flex flex-col items-center gap-4 text-center">
+          <div className="relative mb-1 flex size-24 items-center justify-center">
             <img
               src={glowEllipse}
               alt=""
@@ -65,39 +65,39 @@ function Login() {
             <span className="text-primary">rastreie</span> cada equipamento
             do laboratório.
           </h1>
-          <p className="max-w-[28rem] text-body text-muted-foreground">
+          <p className="max-w-md text-body text-muted-foreground">
             Empréstimos, devoluções e histórico dos equipamentos do
             laboratório em um só lugar — sincronizado com o app do técnico.
           </p>
         </div>
 
-        <div className="relative flex gap-sm">
-          <div className="rounded-md border border-white/10 bg-white/5 px-md py-xs text-body-sm">
+        <div className="relative flex gap-2">
+          <div className="rounded-md border border-white/10 bg-white/5 px-3 py-1 text-body-sm">
             <strong>128</strong> equipamentos
           </div>
-          <div className="rounded-md border border-white/10 bg-white/5 px-md py-xs text-body-sm">
+          <div className="rounded-md border border-white/10 bg-white/5 px-3 py-1 text-body-sm">
             <strong>36</strong> emprestados agora
           </div>
-          <div className="rounded-md border border-white/10 bg-white/5 px-md py-xs text-body-sm">
+          <div className="rounded-md border border-white/10 bg-white/5 px-3 py-1 text-body-sm">
             <strong>3</strong> pendências
           </div>
         </div>
       </div>
 
       {/* Painel direito - form */}
-      <div className="flex flex-1 items-center justify-center bg-muted p-lg">
-        <Card className="w-full max-w-[24rem] p-xl">
-          <div className="mb-md flex size-10 items-center justify-center rounded-md bg-primary-soft">
+      <div className="flex flex-1 items-center justify-center bg-muted p-4">
+        <Card className="w-full max-w-sm p-5">
+          <div className="mb-3 flex size-10 items-center justify-center rounded-md bg-primary-soft">
             <Logo className="h-6 w-auto" />
           </div>
 
           <h2 className="text-h2 font-semibold">Entrar</h2>
-          <p className="mb-lg text-body-sm text-muted-foreground">
+          <p className="mb-4 text-body-sm text-muted-foreground">
             Acesso restrito a técnicos de laboratório cadastrados.
           </p>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-md">
-            <div className="flex flex-col gap-xs">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1">
               <Label htmlFor="email" className="text-body-sm text-muted-foreground">
                 E-mail institucional
               </Label>
@@ -119,7 +119,7 @@ function Login() {
               )}
             </div>
 
-            <div className="flex flex-col gap-xs">
+            <div className="flex flex-col gap-1">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password" className="text-body-sm text-muted-foreground">
                   Senha
@@ -146,7 +146,7 @@ function Login() {
               )}
             </div>
 
-            <Button type="submit" disabled={isSubmitting} className="mt-xs">
+            <Button type="submit" disabled={isSubmitting} className="mt-1">
               {isSubmitting ? 'Entrando...' : (
                 <>
                   Entrar <ArrowRight className="size-4" />
@@ -155,7 +155,7 @@ function Login() {
             </Button>
           </form>
 
-          <div className="mt-lg flex gap-xs rounded-md border border-dashed border-border bg-muted p-sm text-body-sm text-muted-foreground">
+          <div className="mt-4 flex gap-1 rounded-md border border-dashed border-border bg-muted p-2 text-body-sm text-muted-foreground">
             <Info className="size-4 shrink-0" />
             <span>
               Protótipo de validação — clique em "Entrar" com os dados
@@ -163,7 +163,7 @@ function Login() {
             </span>
           </div>
 
-          <p className="mt-lg text-center text-caption text-muted-foreground">
+          <p className="mt-4 text-center text-caption text-muted-foreground">
             LabTrack © 2026 · Apenas técnicos autenticados registram
             empréstimos e devoluções
           </p>
