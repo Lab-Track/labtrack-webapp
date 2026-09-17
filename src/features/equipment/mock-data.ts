@@ -1,8 +1,8 @@
-import type { Equipamento, Projeto } from './types'
+import type { Equipamento, HistoricoEquipamentoItem, Projeto } from './types'
 
 export const MOCK_PROJETOS: Projeto[] = [
-  { id: 'proj-1', nome: 'Robótica Educacional' },
-  { id: 'proj-2', nome: 'Iniciação Científica - Sensores' },
+  { id: 'proj-1', nome: 'Robótica Educacional', professorResponsavel: 'Prof. Simone' },
+  { id: 'proj-2', nome: 'Iniciação Científica - Sensores', professorResponsavel: 'Prof.ª Daniel' },
 ]
 
 export const MOCK_EQUIPAMENTOS: Equipamento[] = [
@@ -12,11 +12,13 @@ export const MOCK_EQUIPAMENTOS: Equipamento[] = [
     codigo: 'EQ-001',
     fotoUrl: null,
     status: 'DISPONIVEL',
+    categoria: 'Microcontrolador',
     laboratorio: 'Laboratório 2',
     bancada: 'Bancada 03',
     qtdDisponivel: 1,
     qtdTotal: 1,
     projeto: MOCK_PROJETOS[0],
+    cadastradoEm: '2024-03-12',
   },
   {
     id: '2',
@@ -24,11 +26,13 @@ export const MOCK_EQUIPAMENTOS: Equipamento[] = [
     codigo: 'EQ-002',
     fotoUrl: null,
     status: 'DISPONIVEL',
+    categoria: 'Acessório',
     laboratorio: 'Laboratório 1',
     bancada: 'Bancada 01',
     qtdDisponivel: 1,
     qtdTotal: 1,
     projeto: null,
+    cadastradoEm: '2024-02-20',
   },
   {
     id: '3',
@@ -36,11 +40,13 @@ export const MOCK_EQUIPAMENTOS: Equipamento[] = [
     codigo: 'EQ-003',
     fotoUrl: null,
     status: 'EMPRESTADO',
+    categoria: 'Módulo',
     laboratorio: 'Laboratório 3',
     bancada: 'Bancada 02',
     qtdDisponivel: 1,
     qtdTotal: 3,
     projeto: MOCK_PROJETOS[0],
+    cadastradoEm: '2024-01-15',
   },
   {
     id: '4',
@@ -48,11 +54,13 @@ export const MOCK_EQUIPAMENTOS: Equipamento[] = [
     codigo: 'EQ-004',
     fotoUrl: null,
     status: 'DISPONIVEL',
+    categoria: 'Sensor',
     laboratorio: 'Laboratório 1',
     bancada: null,
     qtdDisponivel: 1,
     qtdTotal: 1,
     projeto: MOCK_PROJETOS[1],
+    cadastradoEm: '2024-04-02',
   },
   {
     id: '5',
@@ -60,11 +68,13 @@ export const MOCK_EQUIPAMENTOS: Equipamento[] = [
     codigo: 'EQ-005',
     fotoUrl: null,
     status: 'MANUTENCAO',
+    categoria: 'Instrumento de medição',
     laboratorio: 'Laboratório 2',
     bancada: null,
     qtdDisponivel: 0,
     qtdTotal: 2,
     projeto: null,
+    cadastradoEm: '2023-11-30',
   },
   {
     id: '6',
@@ -72,11 +82,13 @@ export const MOCK_EQUIPAMENTOS: Equipamento[] = [
     codigo: 'EQ-006',
     fotoUrl: null,
     status: 'EMPRESTADO',
+    categoria: 'Instrumento de medição',
     laboratorio: 'Laboratório 2',
     bancada: null,
     qtdDisponivel: 0,
     qtdTotal: 1,
     projeto: null,
+    cadastradoEm: '2023-09-18',
   },
   {
     id: '7',
@@ -84,11 +96,13 @@ export const MOCK_EQUIPAMENTOS: Equipamento[] = [
     codigo: 'EQ-007',
     fotoUrl: null,
     status: 'INATIVO',
+    categoria: 'Placa de desenvolvimento',
     laboratorio: 'Laboratório 3',
     bancada: null,
     qtdDisponivel: 0,
     qtdTotal: 4,
     projeto: MOCK_PROJETOS[1],
+    cadastradoEm: '2023-08-05',
   },
   {
     id: '8',
@@ -96,10 +110,46 @@ export const MOCK_EQUIPAMENTOS: Equipamento[] = [
     codigo: 'EQ-008',
     fotoUrl: null,
     status: 'DISPONIVEL',
+    categoria: 'Fonte de alimentação',
     laboratorio: 'Laboratório 2',
     bancada: null,
     qtdDisponivel: 2,
     qtdTotal: 2,
     projeto: null,
+    cadastradoEm: '2024-05-10',
   },
 ]
+
+export const MOCK_HISTORICO_EQUIPAMENTOS: Record<
+  string,
+  HistoricoEquipamentoItem[]
+> = {
+  '1': [
+    {
+      id: 'hist-1-1',
+      tipo: 'EMPRESTIMO',
+      data: '2024-05-07T10:30:00',
+      aluno: 'João Silva',
+      quantidade: 1,
+      professor: 'Prof. Marcos Andrade',
+    },
+    {
+      id: 'hist-1-2',
+      tipo: 'DEVOLUCAO',
+      data: '2024-04-20T09:00:00',
+      aluno: 'Ana Beatriz',
+      quantidade: 1,
+      professor: null,
+    },
+  ],
+  '3': [
+    {
+      id: 'hist-3-1',
+      tipo: 'EMPRESTIMO',
+      data: '2024-05-28T14:15:00',
+      aluno: 'Carlos Eduardo',
+      quantidade: 2,
+      professor: 'Prof. Marcos Andrade',
+    },
+  ],
+}
