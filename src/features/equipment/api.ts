@@ -1,5 +1,6 @@
 import type { Equipamento, Projeto, StatusEquipamento, HistoricoEquipamentoItem } from './types'
 import { MOCK_EQUIPAMENTOS, MOCK_HISTORICO_EQUIPAMENTOS, MOCK_PROJETOS } from './mock-data'
+import { getToken } from '@/lib/auth'
 
 export const DEFAULT_PAGE_SIZE = 4
 
@@ -27,12 +28,8 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-function getAuthToken(): string | null {
-  return null
-}
-
 function buildAuthHeaders(): HeadersInit {
-  const token = getAuthToken()
+  const token = getToken()
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 

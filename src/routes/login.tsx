@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card } from '@/components/ui/card'
 import { Logo, LogoFull } from '@/components/layout/logo'
+import { setToken } from '@/lib/auth'
 import textureDots from '@/assets/login/texture-dots.svg'
 import glowEllipse from '@/assets/login/glow-ellipse.svg'
 
@@ -33,9 +34,10 @@ function Login() {
   })
 
   async function onSubmit(data: LoginForm) {
-    // MOCK: sem API ainda — só simula um delay e loga os dados
+    // MOCK: sem API ainda — só simula um delay e grava um token fake
     console.log('login mock:', data)
     await new Promise((r) => setTimeout(r, 800))
+    setToken('mock-jwt-token')
     navigate({ to: '/' })
   }
 

@@ -1,11 +1,24 @@
-import { Bell, ChevronDown } from 'lucide-react'
-import { useMatches } from '@tanstack/react-router'
+import { Bell, ChevronDown, LogOut } from 'lucide-react'
+import { useMatches, useNavigate } from '@tanstack/react-router'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { clearToken } from '@/lib/auth'
 
 export function Topbar() {
   const matches = useMatches()
+  const navigate = useNavigate()
   const { title, subtitle } = matches[matches.length - 1].staticData
+
+  function handleLogout() {
+    clearToken()
+    navigate({ to: '/login' })
+  }
 
   return (
     <header className="flex items-center gap-4 border-b border-border px-6 py-3">
@@ -21,16 +34,26 @@ export function Topbar() {
         <Button type="button" variant="outline" size="icon">
           <Bell className="size-4" />
         </Button>
-        <button
-          type="button"
-          className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1 hover:bg-muted"
-        >
-          <Avatar size="sm">
-            <AvatarFallback>KO</AvatarFallback>
-          </Avatar>
-          <span className="text-sm font-medium text-foreground">Kênia</span>
-          <ChevronDown className="size-3.5 text-muted-foreground" />
-        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1 hover:bg-muted"
+            >
+              <Avatar size="sm">
+                <AvatarFallback>KO</AvatarFallback>
+              </Avatar>
+              <span className="text-sm font-medium text-foreground">Kênia</span>
+              <ChevronDown className="size-3.5 text-muted-foreground" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem variant="destructive" onSelect={handleLogout}>
+              <LogOut className="size-4" />
+              Sair
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   )
