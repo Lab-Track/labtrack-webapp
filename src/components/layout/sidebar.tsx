@@ -22,14 +22,14 @@ const SIDEBAR_COLLAPSED_KEY = 'labtrack-sidebar-collapsed'
 interface NavItem {
   label: string
   icon: ComponentType<{ className?: string }>
-  to?: '/equipment'
+  to?: '/equipment' | '/loans'
   badge?: number
 }
 
 const NAV_ITEMS: NavItem[] = [
   { label: 'Dashboard', icon: LayoutDashboard },
   { label: 'Equipamentos', icon: Cpu, to: '/equipment' },
-  { label: 'Empréstimos', icon: ArrowLeftRight },
+  { label: 'Empréstimos', icon: ArrowLeftRight, to: '/loans' },
   { label: 'Alunos', icon: Users },
   { label: 'Histórico', icon: History },
   { label: 'Alertas', icon: Bell, badge: 3 },
