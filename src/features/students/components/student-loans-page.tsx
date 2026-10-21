@@ -18,7 +18,10 @@ export function StudentLoansPage() {
   function handleSubmit(event: FormEvent) {
     event.preventDefault()
     const valor = input.trim()
-    if (valor) setMatricula(valor)
+    if (!valor) return
+    // Mesma matrícula não muda o estado, então a consulta não rodaria de novo sozinha.
+    if (valor === matricula) query.refetch()
+    else setMatricula(valor)
   }
 
   function abrirEquipamento(id: string) {
