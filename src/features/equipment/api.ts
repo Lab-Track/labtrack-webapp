@@ -33,6 +33,57 @@ function buildAuthHeaders(): HeadersInit {
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
+// O Spring Data expõe Page<T> como { content, totalElements, number, size, totalPages, ... }
+// (number é 0-based); aqui achatamos para o formato que o resto do app usa, mantendo a
+// paginação 1-based já adotada pelo modo mock.
+interface SpringPage<T> {
+  content: T[]
+  totalElements: number
+  totalPages: number
+  size: number
+}
+
+function mapSpringPage<T>(springPage: SpringPage<T>, requestedPage: number): {
+  items: T[]
+  page: number
+  pageSize: number
+  total: number
+  totalPages: number
+} {
+  return {
+    items: springPage.content,
+    page: requestedPage,
+    pageSize: springPage.size,
+    total: springPage.totalElements,
+    totalPages: springPage.totalPages,
+  }
+}
+
+// O backend serializa id como número (Long), mas o resto do app (inclusive os <Select> que
+// usam o id como value) trata id como string — sem essa conversão, comparações como
+// `item.id === equipamentoId` ficam inconsistentes dependendo de onde o valor veio, e o
+// Radix Select para de refletir a seleção no texto do trigger.
+interface ProjetoApiResponse {
+  id: number
+  nome: string
+  professorResponsavel: string | null
+}
+
+interface EquipamentoApiResponse extends Omit<Equipamento, 'id' | 'projeto'> {
+  id: number
+  projeto: ProjetoApiResponse | null
+}
+
+function normalizeEquipamento(raw: EquipamentoApiResponse): Equipamento {
+  return {
+    ...raw,
+    id: String(raw.id),
+    projeto: raw.projeto
+      ? { ...raw.projeto, id: String(raw.projeto.id) }
+      : null,
+  }
+}
+
 function matchesFilters(
   equipamento: Equipamento,
   params: FetchEquipamentosParams
@@ -94,12 +145,13 @@ export async function fetchEquipamentos(
 ): Promise<EquipamentosPage> {
   if (USE_MOCK) return fetchEquipamentosMock(params)
 
+  const page = params.page ?? 1
   const searchParams = new URLSearchParams()
   if (params.status) searchParams.set('status', params.status)
   if (params.search) searchParams.set('search', params.search)
   if (params.projetoId) searchParams.set('projectId', params.projetoId)
-  searchParams.set('page', String(params.page ?? 1))
-  searchParams.set('pageSize', String(params.pageSize ?? DEFAULT_PAGE_SIZE))
+  searchParams.set('page', String(page - 1))
+  searchParams.set('size', String(params.pageSize ?? DEFAULT_PAGE_SIZE))
 
   const response = await fetch(
     `${API_URL}/api/equipment?${searchParams.toString()}`,
@@ -108,7 +160,11 @@ export async function fetchEquipamentos(
   if (!response.ok) {
     throw new Error(`Falha ao buscar equipamentos: ${response.status}`)
   }
-  return response.json()
+  const springPage: SpringPage<EquipamentoApiResponse> = await response.json()
+  return mapSpringPage(
+    { ...springPage, content: springPage.content.map(normalizeEquipamento) },
+    page
+  )
 }
 
 export async function fetchEquipamento(id: string): Promise<Equipamento> {
@@ -120,7 +176,31 @@ export async function fetchEquipamento(id: string): Promise<Equipamento> {
   if (!response.ok) {
     throw new Error(`Falha ao buscar equipamento ${id}: ${response.status}`)
   }
-  return response.json()
+  const raw: EquipamentoApiResponse = await response.json()
+  return normalizeEquipamento(raw)
+}
+
+// O backend não usa os mesmos nomes de campo do front para esse DTO (ver
+// EquipmentHistoryDTO.java): loanId/eventType/eventDate/studentName/professorName/quantity,
+// com eventType valendo "RETIRADA" ou "DEVOLUCAO" em vez de "EMPRESTIMO"/"DEVOLUCAO".
+interface EquipmentHistoryResponse {
+  loanId: number
+  eventType: 'RETIRADA' | 'DEVOLUCAO'
+  eventDate: string
+  studentName: string
+  professorName: string | null
+  quantity: number
+}
+
+function mapHistoricoItem(item: EquipmentHistoryResponse): HistoricoEquipamentoItem {
+  return {
+    id: `${item.loanId}-${item.eventType}-${item.eventDate}`,
+    tipo: item.eventType === 'RETIRADA' ? 'EMPRESTIMO' : 'DEVOLUCAO',
+    data: item.eventDate,
+    aluno: item.studentName,
+    quantidade: item.quantity,
+    professor: item.professorName,
+  }
 }
 
 export async function fetchHistoricoEquipamento(
@@ -135,7 +215,8 @@ export async function fetchHistoricoEquipamento(
   if (!response.ok) {
     throw new Error(`Falha ao buscar histórico: ${response.status}`)
   }
-  return response.json()
+  const springPage: SpringPage<EquipmentHistoryResponse> = await response.json()
+  return springPage.content.map(mapHistoricoItem)
 }
 
 export async function fetchProjetos(): Promise<Projeto[]> {
@@ -147,7 +228,8 @@ export async function fetchProjetos(): Promise<Projeto[]> {
   if (!response.ok) {
     throw new Error(`Falha ao buscar projetos: ${response.status}`)
   }
-  return response.json()
+  const projetos: ProjetoApiResponse[] = await response.json()
+  return projetos.map((projeto) => ({ ...projeto, id: String(projeto.id) }))
 }
 
 async function updateStatusEquipamentoMock(

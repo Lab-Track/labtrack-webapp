@@ -1,4 +1,4 @@
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import {
   ArrowLeftRight,
   Bell,
@@ -15,6 +15,7 @@ import {
 import { useEffect, useState } from 'react'
 import type { ComponentType } from 'react'
 import { cn } from '@/lib/utils'
+import { clearToken } from '@/lib/auth'
 import { Logo, LogoFull } from './logo'
 
 const SIDEBAR_COLLAPSED_KEY = 'labtrack-sidebar-collapsed'
@@ -22,14 +23,14 @@ const SIDEBAR_COLLAPSED_KEY = 'labtrack-sidebar-collapsed'
 interface NavItem {
   label: string
   icon: ComponentType<{ className?: string }>
-  to?: '/equipment'
+  to?: '/equipment' | '/loans'
   badge?: number
 }
 
 const NAV_ITEMS: NavItem[] = [
   { label: 'Dashboard', icon: LayoutDashboard },
   { label: 'Equipamentos', icon: Cpu, to: '/equipment' },
-  { label: 'Empréstimos', icon: ArrowLeftRight },
+  { label: 'Empréstimos', icon: ArrowLeftRight, to: '/loans' },
   { label: 'Alunos', icon: Users },
   { label: 'Histórico', icon: History },
   { label: 'Alertas', icon: Bell, badge: 3 },
@@ -102,6 +103,12 @@ export function Sidebar() {
     }
   })
   const [hovering, setHovering] = useState(false)
+  const navigate = useNavigate()
+
+  function handleLogout() {
+    clearToken()
+    navigate({ to: '/login' })
+  }
 
   useEffect(() => {
     try {
@@ -166,7 +173,7 @@ export function Sidebar() {
           ))}
         </nav>
       </div>
-      <button type='button' className={cn(
+      <button type='button' onClick={handleLogout} className={cn(
         'flex items-center gap-2 rounded-lg py-2 px-2 transition-colors text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground',
         !expanded && 'justify-center px-0'
         )}
