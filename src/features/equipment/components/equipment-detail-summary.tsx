@@ -1,4 +1,5 @@
 import { Cpu } from 'lucide-react'
+import { useState } from 'react'
 import { formatDate } from '@/lib/utils'
 import type { Equipamento } from '../types'
 import { StatusBadge } from './status-badge'
@@ -8,6 +9,7 @@ export function EquipmentDetailSummary({
 }: {
   equipamento: Equipamento
 }) {
+  const [imageFailed, setImageFailed] = useState(false)
   const rows: [string, string][] = [
     ['Patrimônio', equipamento.codigo],
     ['Categoria', equipamento.categoria],
@@ -34,11 +36,12 @@ export function EquipmentDetailSummary({
   return (
     <div className="rounded-xl border border-border bg-background p-4">
       <div className="flex items-center gap-4">
-        {equipamento.fotoUrl ? (
+        {equipamento.fotoUrl && !imageFailed ? (
           <img
             src={equipamento.fotoUrl}
             alt={equipamento.nome}
             className="size-16 shrink-0 rounded-lg object-cover"
+            onError={() => setImageFailed(true)}
           />
         ) : (
           <div className="flex size-16 shrink-0 items-center justify-center rounded-lg bg-[#EDEEFF]">

@@ -1,6 +1,6 @@
 import { useNavigate } from '@tanstack/react-router'
 import { Cpu, Gauge, Puzzle, Radar } from 'lucide-react'
-import type { ComponentType } from 'react'
+import { useState, type ComponentType } from 'react'
 import type { Equipamento } from '../types'
 import { StatusBadge } from './status-badge'
 
@@ -20,6 +20,7 @@ export function EquipmentCard({
 }) {
   const navigate = useNavigate()
   const { background, Icon } = CARD_STYLES[index % CARD_STYLES.length]
+  const [imageFailed, setImageFailed] = useState(false)
 
   return (
     <button
@@ -29,11 +30,12 @@ export function EquipmentCard({
       }
       className="flex cursor-pointer flex-col overflow-hidden rounded-xl border border-border bg-card text-left transition-shadow hover:shadow-md"
     >
-      {equipamento.fotoUrl ? (
+      {equipamento.fotoUrl && !imageFailed ? (
         <img
           src={equipamento.fotoUrl}
           alt={equipamento.nome}
           className="h-28 w-full object-cover"
+          onError={() => setImageFailed(true)}
         />
       ) : (
         <div
