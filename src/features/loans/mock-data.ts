@@ -1,12 +1,12 @@
-import type { AlunoResumo, Emprestimo } from './types'
+import type { AlunoResumo, Emprestimo, Professor } from './types'
 
 export const TECNICO_RESPONSAVEL = 'Kênia Oliveira'
 
-export const PROFESSORES_MOCK = [
-  'Prof. Marcos Andrade',
-  'Profa. Camila Rocha',
-  'Prof. Simone',
-  'Prof.ª Daniel',
+export const PROFESSORES_MOCK: Professor[] = [
+  { id: '1', nome: 'Prof. Marcos Andrade' },
+  { id: '2', nome: 'Profa. Camila Rocha' },
+  { id: '3', nome: 'Prof. Simone' },
+  { id: '4', nome: 'Prof.ª Daniel' },
 ]
 
 export const MOCK_ALUNOS: Record<string, AlunoResumo> = {

@@ -22,9 +22,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useRegistrarDevolucao } from '../use-loans'
-import type { Emprestimo } from '../types'
+import { ESTADOS_EQUIPAMENTO, type Emprestimo } from '../types'
 
-const ESTADOS_DEVOLUCAO = ['Sem avarias', 'Com avarias leves', 'Danificado'] as const
 const VERIFICACOES_FUNCIONAMENTO = [
   'Funcionando normalmente',
   'Funcionamento parcial',
@@ -64,11 +63,25 @@ export function ReturnLoanDialog({
     formState: { errors, isSubmitting },
   } = useForm<DevolucaoForm>({
     resolver: zodResolver(devolucaoSchema),
+    defaultValues: {
+      estadoDevolucao: '',
+      verificacaoFuncionamento: '',
+      observacoes: '',
+    },
   })
 
   useEffect(() => {
     if (emprestimo) {
-      reset({ quantidadeDevolvida: emprestimo.quantidade })
+      // Campos ligados a <Select> precisam nascer com um valor definido (string vazia), senão
+      // o componente começa não controlado e vira controlado só na primeira seleção, quebrando
+      // a atualização do Radix Select (ver aviso "Select is changing from uncontrolled to
+      // controlled").
+      reset({
+        quantidadeDevolvida: emprestimo.quantidade,
+        estadoDevolucao: '',
+        verificacaoFuncionamento: '',
+        observacoes: '',
+      })
     }
   }, [emprestimo, reset])
 
@@ -85,12 +98,13 @@ export function ReturnLoanDialog({
       estadoDevolucao: data.estadoDevolucao,
       verificacaoFuncionamento: data.verificacaoFuncionamento,
       observacoes: data.observacoes ?? '',
+      foto: data.foto,
     })
     onOpenChange(false)
   }
 
   return (
-    <Dialog open onOpenChange={onOpenChange}>
+    <Dialog open onOpenChange={onOpenChange} modal={false}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Registrar devolução</DialogTitle>
@@ -154,7 +168,7 @@ export function ReturnLoanDialog({
                       <SelectValue placeholder="Selecione" />
                     </SelectTrigger>
                     <SelectContent>
-                      {ESTADOS_DEVOLUCAO.map((estado) => (
+                      {ESTADOS_EQUIPAMENTO.map((estado) => (
                         <SelectItem key={estado} value={estado}>
                           {estado}
                         </SelectItem>

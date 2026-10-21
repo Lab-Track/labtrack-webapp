@@ -1,5 +1,16 @@
 export type StatusEmprestimo = 'EMPRESTADO' | 'ATRASADO' | 'DEVOLVIDO'
 
+export const ESTADOS_EQUIPAMENTO = [
+  'Sem avarias',
+  'Com avarias leves',
+  'Danificado',
+] as const
+
+export interface Professor {
+  id: string
+  nome: string
+}
+
 export interface AlunoResumo {
   nome: string
   matricula: string

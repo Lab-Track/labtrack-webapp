@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -22,25 +23,41 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { formatDateTime } from '@/lib/utils'
-import { MOCK_EQUIPAMENTOS } from '@/features/equipment/mock-data'
-import { PROFESSORES_MOCK, TECNICO_RESPONSAVEL } from '../mock-data'
+import { fetchEquipamentos } from '@/features/equipment/api'
+import { TECNICO_RESPONSAVEL } from '../mock-data'
 import { buscarAlunoPorMatricula } from '../api'
-import { useRegistrarEmprestimo } from '../use-loans'
+import { useProfessores, useRegistrarEmprestimo } from '../use-loans'
+import { ESTADOS_EQUIPAMENTO } from '../types'
 
 const novoEmprestimoSchema = z.object({
   equipamentoId: z.string().min(1, 'Selecione um equipamento'),
   quantidade: z.number().min(1, 'Informe ao menos 1 unidade'),
   matricula: z.string().min(1, 'Informe a matrícula'),
   nome: z.string().min(1, 'Informe o nome do aluno'),
-  email: z.string().email('E-mail inválido').optional().or(z.literal('')),
+  email: z.string().min(1, 'Informe o e-mail').email('E-mail inválido'),
   telefone: z.string().optional(),
-  professor: z.string().min(1, 'Selecione o professor responsável'),
+  professorId: z.string().min(1, 'Selecione o professor responsável'),
+  estadoRetirada: z.string().min(1, 'Selecione o estado do equipamento'),
   foto: z.instanceof(File, {
     message: 'A foto do estado do equipamento é obrigatória',
   }),
 })
 
 type NovoEmprestimoForm = z.infer<typeof novoEmprestimoSchema>
+
+// Campos ligados a <Select> precisam nascer com um valor definido (string vazia), senão o
+// componente começa não controlado e vira controlado só na primeira seleção, quebrando a
+// atualização do Radix Select (ver aviso "Select is changing from uncontrolled to controlled").
+const FORM_DEFAULT_VALUES = {
+  equipamentoId: '',
+  quantidade: 1,
+  matricula: '',
+  nome: '',
+  email: '',
+  telefone: '',
+  professorId: '',
+  estadoRetirada: '',
+}
 
 export function NewLoanDialog({
   open,
@@ -52,13 +69,17 @@ export function NewLoanDialog({
   const [alunoEncontrado, setAlunoEncontrado] = useState(false)
   const [buscandoAluno, setBuscandoAluno] = useState(false)
   const mutation = useRegistrarEmprestimo()
+  const professoresQuery = useProfessores()
+
+  const equipamentosQuery = useQuery({
+    queryKey: ['equipamentos', 'disponiveis'],
+    queryFn: () => fetchEquipamentos({ status: 'DISPONIVEL', pageSize: 100 }),
+    enabled: open,
+  })
 
   const equipamentosDisponiveis = useMemo(
-    () =>
-      MOCK_EQUIPAMENTOS.filter(
-        (item) => item.status === 'DISPONIVEL' && item.qtdDisponivel > 0
-      ),
-    []
+    () => (equipamentosQuery.data?.items ?? []).filter((item) => item.qtdDisponivel > 0),
+    [equipamentosQuery.data]
   )
 
   const {
@@ -71,12 +92,12 @@ export function NewLoanDialog({
     formState: { errors, isSubmitting },
   } = useForm<NovoEmprestimoForm>({
     resolver: zodResolver(novoEmprestimoSchema),
-    defaultValues: { quantidade: 1 },
+    defaultValues: FORM_DEFAULT_VALUES,
   })
 
   useEffect(() => {
     if (!open) {
-      reset({ quantidade: 1 })
+      reset(FORM_DEFAULT_VALUES)
       setAlunoEncontrado(false)
       setBuscandoAluno(false)
     }
@@ -110,16 +131,18 @@ export function NewLoanDialog({
       aluno: {
         nome: data.nome,
         matricula: data.matricula,
-        email: data.email ?? '',
+        email: data.email,
         telefone: data.telefone ?? '',
       },
-      professor: data.professor,
+      professorId: data.professorId,
+      estadoRetirada: data.estadoRetirada,
+      foto: data.foto,
     })
     onOpenChange(false)
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>Novo empréstimo</DialogTitle>
@@ -148,7 +171,13 @@ export function NewLoanDialog({
                       }}
                     >
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Selecione um equipamento" />
+                        <SelectValue
+                          placeholder={
+                            equipamentosQuery.isPending
+                              ? 'Carregando equipamentos...'
+                              : 'Selecione um equipamento'
+                          }
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         {equipamentosDisponiveis.map((item) => (
@@ -284,25 +313,31 @@ export function NewLoanDialog({
               <Label>Professor responsável</Label>
               <Controller
                 control={control}
-                name="professor"
+                name="professorId"
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Selecione o professor" />
+                      <SelectValue
+                        placeholder={
+                          professoresQuery.isPending
+                            ? 'Carregando professores...'
+                            : 'Selecione o professor'
+                        }
+                      />
                     </SelectTrigger>
                     <SelectContent>
-                      {PROFESSORES_MOCK.map((nome) => (
-                        <SelectItem key={nome} value={nome}>
-                          {nome}
+                      {professoresQuery.data?.map((professor) => (
+                        <SelectItem key={professor.id} value={professor.id}>
+                          {professor.nome}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 )}
               />
-              {errors.professor && (
+              {errors.professorId && (
                 <span className="text-xs text-destructive">
-                  {errors.professor.message}
+                  {errors.professorId.message}
                 </span>
               )}
             </div>
@@ -321,6 +356,33 @@ export function NewLoanDialog({
                 <Label>Data/hora da retirada</Label>
                 <Input value={formatDateTime(new Date().toISOString())} disabled />
               </div>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <Label>Estado do equipamento na retirada</Label>
+              <Controller
+                control={control}
+                name="estadoRetirada"
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ESTADOS_EQUIPAMENTO.map((estado) => (
+                        <SelectItem key={estado} value={estado}>
+                          {estado}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.estadoRetirada && (
+                <span className="text-xs text-destructive">
+                  {errors.estadoRetirada.message}
+                </span>
+              )}
             </div>
 
             <div className="flex flex-col gap-1">
