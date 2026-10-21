@@ -1,4 +1,5 @@
 import { Link, useNavigate } from '@tanstack/react-router'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   ArrowLeftRight,
   Bell,
@@ -104,9 +105,11 @@ export function Sidebar() {
   })
   const [hovering, setHovering] = useState(false)
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   function handleLogout() {
     clearToken()
+    queryClient.clear()
     navigate({ to: '/login' })
   }
 

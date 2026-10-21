@@ -4,6 +4,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Camera, Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 import {
   Dialog,
   DialogContent,
@@ -73,7 +74,7 @@ export function NewLoanDialog({
 
   const equipamentosQuery = useQuery({
     queryKey: ['equipamentos', 'disponiveis'],
-    queryFn: () => fetchEquipamentos({ status: 'DISPONIVEL', pageSize: 100 }),
+    queryFn: () => fetchEquipamentos({ pageSize: 100 }),
     enabled: open,
   })
 
@@ -112,15 +113,23 @@ export function NewLoanDialog({
   async function handleMatriculaBlur(matricula: string) {
     if (!matricula.trim()) return
     setBuscandoAluno(true)
-    const aluno = await buscarAlunoPorMatricula(matricula.trim())
-    setBuscandoAluno(false)
-    if (aluno) {
-      setValue('nome', aluno.nome)
-      setValue('email', aluno.email)
-      setValue('telefone', aluno.telefone)
-      setAlunoEncontrado(true)
-    } else {
+    try {
+      const aluno = await buscarAlunoPorMatricula(matricula.trim())
+      if (aluno) {
+        setValue('nome', aluno.nome)
+        setValue('email', aluno.email)
+        setValue('telefone', aluno.telefone)
+        setAlunoEncontrado(true)
+      } else {
+        setAlunoEncontrado(false)
+      }
+    } catch (error) {
       setAlunoEncontrado(false)
+      toast.error(
+        error instanceof Error ? error.message : 'Não foi possível buscar o aluno.'
+      )
+    } finally {
+      setBuscandoAluno(false)
     }
   }
 
