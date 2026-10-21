@@ -2,13 +2,15 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Mail, Lock, ArrowRight, Info } from 'lucide-react'
+import { User, Lock, ArrowRight, Info } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card } from '@/components/ui/card'
 import { Logo, LogoFull } from '@/components/layout/logo'
 import { setToken } from '@/lib/auth'
+import { autenticar } from '@/features/auth/api'
 import textureDots from '@/assets/login/texture-dots.svg'
 import glowEllipse from '@/assets/login/glow-ellipse.svg'
 
@@ -17,7 +19,7 @@ export const Route = createFileRoute('/login')({
 })
 
 const loginSchema = z.object({
-  email: z.string().email('E-mail inválido'),
+  login: z.string().min(1, 'Informe o login'),
   password: z.string().min(6, 'A senha precisa ter no mínimo 6 caracteres'),
 })
 
@@ -34,11 +36,15 @@ function Login() {
   })
 
   async function onSubmit(data: LoginForm) {
-    // MOCK: sem API ainda — só simula um delay e grava um token fake
-    console.log('login mock:', data)
-    await new Promise((r) => setTimeout(r, 800))
-    setToken('mock-jwt-token')
-    navigate({ to: '/' })
+    try {
+      const { token } = await autenticar(data)
+      setToken(token)
+      navigate({ to: '/' })
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Não foi possível entrar.'
+      )
+    }
   }
 
   return (
@@ -100,23 +106,23 @@ function Login() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
             <div className="flex flex-col gap-1">
-              <Label htmlFor="email" className="text-body-sm text-muted-foreground">
-                E-mail institucional
+              <Label htmlFor="login" className="text-body-sm text-muted-foreground">
+                Login
               </Label>
               <div className="relative">
-                <Mail className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-placeholder" />
+                <User className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-placeholder" />
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="seu.email@labtrack.edu.br"
+                  id="login"
+                  type="text"
+                  placeholder="tecnico.teste"
                   className="pl-8"
-                  aria-invalid={!!errors.email}
-                  {...register('email')}
+                  aria-invalid={!!errors.login}
+                  {...register('login')}
                 />
               </div>
-              {errors.email && (
+              {errors.login && (
                 <span className="text-body-sm text-destructive">
-                  {errors.email.message}
+                  {errors.login.message}
                 </span>
               )}
             </div>
