@@ -30,7 +30,6 @@ import type { Equipamento } from '@/features/equipment/types'
 import { TECNICO_RESPONSAVEL } from '../mock-data'
 import { buscarAlunoPorMatricula } from '../api'
 import { useProfessores, useRegistrarEmprestimo } from '../use-loans'
-import { ESTADOS_EQUIPAMENTO } from '../types'
 
 function podeEmprestar(item: Equipamento): boolean {
   return item.status === 'DISPONIVEL' && item.qtdDisponivel > 0
@@ -44,6 +43,21 @@ function descreverDisponibilidade(item: Equipamento): string {
   return `${item.qtdDisponivel} disponível`
 }
 
+const DIAS_PRAZO_PADRAO = 7
+
+// <input type="date"> trabalha com 'YYYY-MM-DD' no fuso local (toISOString usaria UTC).
+function paraInputDate(data: Date): string {
+  const mes = String(data.getMonth() + 1).padStart(2, '0')
+  const dia = String(data.getDate()).padStart(2, '0')
+  return `${data.getFullYear()}-${mes}-${dia}`
+}
+
+function diasAPartirDeHoje(dias: number): string {
+  const data = new Date()
+  data.setDate(data.getDate() + dias)
+  return paraInputDate(data)
+}
+
 const novoEmprestimoSchema = z.object({
   equipamentoId: z.string().min(1, 'Selecione um equipamento'),
   quantidade: z.number().min(1, 'Informe ao menos 1 unidade'),
@@ -52,7 +66,10 @@ const novoEmprestimoSchema = z.object({
   email: z.string().min(1, 'Informe o e-mail').email('E-mail inválido'),
   telefone: z.string().optional(),
   professorId: z.string().min(1, 'Selecione o professor responsável'),
-  estadoRetirada: z.string().min(1, 'Selecione o estado do equipamento'),
+  previsaoDevolucao: z
+    .string()
+    .min(1, 'Informe o prazo de devolução')
+    .refine((valor) => valor >= diasAPartirDeHoje(1), 'O prazo deve ser a partir de amanhã'),
   foto: z.instanceof(File, {
     message: 'A foto do estado do equipamento é obrigatória',
   }),
@@ -63,7 +80,8 @@ type NovoEmprestimoForm = z.infer<typeof novoEmprestimoSchema>
 // Campos ligados a <Select> precisam nascer com um valor definido (string vazia), senão o
 // componente começa não controlado e vira controlado só na primeira seleção, quebrando a
 // atualização do Radix Select (ver aviso "Select is changing from uncontrolled to controlled").
-const FORM_DEFAULT_VALUES = {
+// É função (e não constante) para o prazo padrão ser calculado a cada abertura do diálogo.
+const formDefaultValues = () => ({
   equipamentoId: '',
   quantidade: 1,
   matricula: '',
@@ -71,8 +89,8 @@ const FORM_DEFAULT_VALUES = {
   email: '',
   telefone: '',
   professorId: '',
-  estadoRetirada: '',
-}
+  previsaoDevolucao: diasAPartirDeHoje(DIAS_PRAZO_PADRAO),
+})
 
 export function NewLoanDialog({
   open,
@@ -112,12 +130,12 @@ export function NewLoanDialog({
     formState: { errors, isSubmitting },
   } = useForm<NovoEmprestimoForm>({
     resolver: zodResolver(novoEmprestimoSchema),
-    defaultValues: FORM_DEFAULT_VALUES,
+    defaultValues: formDefaultValues(),
   })
 
   useEffect(() => {
     if (!open) {
-      reset(FORM_DEFAULT_VALUES)
+      reset(formDefaultValues())
       setAlunoEncontrado(false)
       setBuscandoAluno(false)
     }
@@ -163,7 +181,7 @@ export function NewLoanDialog({
         telefone: data.telefone ?? '',
       },
       professorId: data.professorId,
-      estadoRetirada: data.estadoRetirada,
+      previsaoDevolucao: data.previsaoDevolucao,
       foto: data.foto,
     })
     onOpenChange(false)
@@ -391,28 +409,17 @@ export function NewLoanDialog({
             </div>
 
             <div className="flex flex-col gap-1">
-              <Label>Estado do equipamento na retirada</Label>
-              <Controller
-                control={control}
-                name="estadoRetirada"
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {ESTADOS_EQUIPAMENTO.map((estado) => (
-                        <SelectItem key={estado} value={estado}>
-                          {estado}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
+              <Label htmlFor="previsaoDevolucao">Prazo de devolução</Label>
+              <Input
+                id="previsaoDevolucao"
+                type="date"
+                min={diasAPartirDeHoje(1)}
+                aria-invalid={!!errors.previsaoDevolucao}
+                {...register('previsaoDevolucao')}
               />
-              {errors.estadoRetirada && (
+              {errors.previsaoDevolucao && (
                 <span className="text-xs text-destructive">
-                  {errors.estadoRetirada.message}
+                  {errors.previsaoDevolucao.message}
                 </span>
               )}
             </div>

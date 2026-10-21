@@ -15,6 +15,7 @@ import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppEquipmentIndexRouteImport } from './routes/_app/equipment.index'
 import { Route as AppEquipmentIdRouteImport } from './routes/_app/equipment.$id'
 import { Route as AppLoansIndexRouteImport } from './routes/_app/loans.index'
+import { Route as AppStudentsIndexRouteImport } from './routes/_app/students.index'
 
 const AppRouteRoute = AppRouteRouteImport.update({
   id: '/_app',
@@ -45,6 +46,11 @@ const AppLoansIndexRoute = AppLoansIndexRouteImport.update({
   path: '/loans/',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppStudentsIndexRoute = AppStudentsIndexRouteImport.update({
+  id: '/students/',
+  path: '/students/',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/equipment/$id': typeof AppEquipmentIdRoute
   '/equipment/': typeof AppEquipmentIndexRoute
   '/loans/': typeof AppLoansIndexRoute
+  '/students/': typeof AppStudentsIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/equipment/$id': typeof AppEquipmentIdRoute
   '/equipment': typeof AppEquipmentIndexRoute
   '/loans': typeof AppLoansIndexRoute
+  '/students': typeof AppStudentsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -68,12 +76,14 @@ export interface FileRoutesById {
   '/_app/equipment/$id': typeof AppEquipmentIdRoute
   '/_app/equipment/': typeof AppEquipmentIndexRoute
   '/_app/loans/': typeof AppLoansIndexRoute
+  '/_app/students/': typeof AppStudentsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/equipment/$id' | '/equipment/' | '/loans/'
+  fullPaths:
+    '/' | '/login' | '/equipment/$id' | '/equipment/' | '/loans/' | '/students/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/' | '/equipment/$id' | '/equipment' | '/loans'
+  to: '/login' | '/' | '/equipment/$id' | '/equipment' | '/loans' | '/students'
   id:
     | '__root__'
     | '/_app'
@@ -82,6 +92,7 @@ export interface FileRouteTypes {
     | '/_app/equipment/$id'
     | '/_app/equipment/'
     | '/_app/loans/'
+    | '/_app/students/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -133,6 +144,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppLoansIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/_app/students/': {
+      id: '/_app/students/'
+      path: '/students'
+      fullPath: '/students/'
+      preLoaderRoute: typeof AppStudentsIndexRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
   }
 }
 
@@ -141,6 +159,7 @@ interface AppRouteRouteChildren {
   AppEquipmentIdRoute: typeof AppEquipmentIdRoute
   AppEquipmentIndexRoute: typeof AppEquipmentIndexRoute
   AppLoansIndexRoute: typeof AppLoansIndexRoute
+  AppStudentsIndexRoute: typeof AppStudentsIndexRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
@@ -148,6 +167,7 @@ const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppEquipmentIdRoute: AppEquipmentIdRoute,
   AppEquipmentIndexRoute: AppEquipmentIndexRoute,
   AppLoansIndexRoute: AppLoansIndexRoute,
+  AppStudentsIndexRoute: AppStudentsIndexRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
