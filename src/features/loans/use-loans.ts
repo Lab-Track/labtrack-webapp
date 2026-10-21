@@ -24,6 +24,7 @@ export function useRegistrarEmprestimo() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['emprestimos'] })
       queryClient.invalidateQueries({ queryKey: ['equipamentos'] })
+      queryClient.invalidateQueries({ queryKey: ['alunos'] })
       toast.success('Empréstimo registrado com sucesso.')
     },
     onError: (error) => {
@@ -40,6 +41,7 @@ export function useRegistrarDevolucao() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['emprestimos'] })
       queryClient.invalidateQueries({ queryKey: ['equipamentos'] })
+      queryClient.invalidateQueries({ queryKey: ['alunos'] })
       toast.success('Devolução registrada com sucesso.')
     },
     onError: (error) => {

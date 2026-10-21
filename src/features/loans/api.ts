@@ -1,20 +1,17 @@
 import { getToken } from '@/lib/auth'
 import { MOCK_EQUIPAMENTOS } from '@/features/equipment/mock-data'
 import { MOCK_ALUNOS, MOCK_EMPRESTIMOS, PROFESSORES_MOCK, TECNICO_RESPONSAVEL } from './mock-data'
+import { ESTADO_RETIRADA_PADRAO } from './types'
 import type { AlunoResumo, Emprestimo, Professor, StatusEmprestimo } from './types'
 
 const API_URL = import.meta.env.VITE_API_URL
 const USE_MOCK = import.meta.env.VITE_USE_MOCK_API !== 'false'
 const MOCK_DELAY_MS = 300
+// O prazo é escolhido só por data; a devolução vale até o fim do expediente desse dia.
+const HORA_LIMITE_DEVOLUCAO = '23:59:00'
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
-function addDays(date: Date, days: number): Date {
-  const result = new Date(date)
-  result.setDate(result.getDate() + days)
-  return result
 }
 
 function buildAuthHeaders(): HeadersInit {
@@ -132,7 +129,7 @@ export interface RegistrarEmprestimoInput {
   quantidade: number
   aluno: AlunoResumo
   professorId: string
-  estadoRetirada: string
+  previsaoDevolucao: string // 'YYYY-MM-DD'
   foto: File
 }
 
@@ -156,7 +153,7 @@ async function registrarEmprestimoMock(
     professor: professor?.nome ?? '',
     tecnicoResponsavel: TECNICO_RESPONSAVEL,
     dataSaida: agora.toISOString(),
-    previsaoDevolucao: addDays(agora, 7).toISOString(),
+    previsaoDevolucao: new Date(`${input.previsaoDevolucao}T${HORA_LIMITE_DEVOLUCAO}`).toISOString(),
     status: 'EMPRESTADO',
   }
   MOCK_EMPRESTIMOS.unshift(novoEmprestimo)
@@ -195,10 +192,11 @@ export async function registrarEmprestimo(
       alunoEmail: input.aluno.email,
       alunoTelefone: input.aluno.telefone || undefined,
       professorId: Number(input.professorId),
+      dataPrevistaDevolucao: `${input.previsaoDevolucao}T${HORA_LIMITE_DEVOLUCAO}`,
       itens: Array.from({ length: input.quantidade }, () => ({
         equipamentoId: Number(input.equipamentoId),
         fotoRetirada: fotoUrl,
-        estadoRetirada: input.estadoRetirada,
+        estadoRetirada: ESTADO_RETIRADA_PADRAO,
       })),
     }),
   })

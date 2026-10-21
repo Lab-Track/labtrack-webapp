@@ -6,6 +6,9 @@ export const ESTADOS_EQUIPAMENTO = [
   'Danificado',
 ] as const
 
+// Só equipamento DISPONIVEL pode ser emprestado (RN01), então a retirada é sempre sem avarias.
+export const ESTADO_RETIRADA_PADRAO = ESTADOS_EQUIPAMENTO[0]
+
 export interface Professor {
   id: string
   nome: string

@@ -2,6 +2,7 @@ export type StatusEquipamento =
   | 'DISPONIVEL'
   | 'EMPRESTADO'
   | 'MANUTENCAO'
+  | 'DANIFICADO'
   | 'INATIVO'
 
 export interface Projeto {

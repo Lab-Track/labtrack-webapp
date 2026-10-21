@@ -23,6 +23,12 @@ export const STATUS_CONFIG: Record<
     text: 'text-[#B4740E]',
     background: 'bg-[#FEF3C7]',
   },
+  DANIFICADO: {
+    label: 'Danificado',
+    dot: 'bg-[#DC2626]',
+    text: 'text-[#DC2626]',
+    background: 'bg-[#FEE2E2]',
+  },
   INATIVO: {
     label: 'Inativo',
     dot: 'bg-[#7C87A6]',
