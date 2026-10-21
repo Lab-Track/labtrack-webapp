@@ -25,10 +25,24 @@ import {
 } from '@/components/ui/select'
 import { formatDateTime } from '@/lib/utils'
 import { fetchEquipamentos } from '@/features/equipment/api'
+import { STATUS_CONFIG } from '@/features/equipment/components/status-badge'
+import type { Equipamento } from '@/features/equipment/types'
 import { TECNICO_RESPONSAVEL } from '../mock-data'
 import { buscarAlunoPorMatricula } from '../api'
 import { useProfessores, useRegistrarEmprestimo } from '../use-loans'
 import { ESTADOS_EQUIPAMENTO } from '../types'
+
+function podeEmprestar(item: Equipamento): boolean {
+  return item.status === 'DISPONIVEL' && item.qtdDisponivel > 0
+}
+
+function descreverDisponibilidade(item: Equipamento): string {
+  if (item.status !== 'DISPONIVEL') {
+    return `indisponível (${STATUS_CONFIG[item.status]?.label ?? item.status})`
+  }
+  if (item.qtdDisponivel <= 0) return 'sem unidades livres'
+  return `${item.qtdDisponivel} disponível`
+}
 
 const novoEmprestimoSchema = z.object({
   equipamentoId: z.string().min(1, 'Selecione um equipamento'),
@@ -73,13 +87,18 @@ export function NewLoanDialog({
   const professoresQuery = useProfessores()
 
   const equipamentosQuery = useQuery({
-    queryKey: ['equipamentos', 'disponiveis'],
+    queryKey: ['equipamentos', 'emprestimo'],
     queryFn: () => fetchEquipamentos({ pageSize: 100 }),
     enabled: open,
   })
 
-  const equipamentosDisponiveis = useMemo(
-    () => (equipamentosQuery.data?.items ?? []).filter((item) => item.qtdDisponivel > 0),
+  // RN01 do backend: só empresta equipamento DISPONIVEL e com unidades livres. Os demais
+  // continuam na lista, desabilitados e com o motivo, para o técnico saber por que não dá.
+  const equipamentos = useMemo(
+    () =>
+      [...(equipamentosQuery.data?.items ?? [])].sort(
+        (a, b) => Number(podeEmprestar(b)) - Number(podeEmprestar(a))
+      ),
     [equipamentosQuery.data]
   )
 
@@ -105,7 +124,7 @@ export function NewLoanDialog({
   }, [open, reset])
 
   const equipamentoId = watch('equipamentoId')
-  const equipamentoSelecionado = equipamentosDisponiveis.find(
+  const equipamentoSelecionado = equipamentos.find(
     (item) => item.id === equipamentoId
   )
   const foto = watch('foto')
@@ -189,9 +208,13 @@ export function NewLoanDialog({
                         />
                       </SelectTrigger>
                       <SelectContent>
-                        {equipamentosDisponiveis.map((item) => (
-                          <SelectItem key={item.id} value={item.id}>
-                            {item.nome} — {item.qtdDisponivel} disponível
+                        {equipamentos.map((item) => (
+                          <SelectItem
+                            key={item.id}
+                            value={item.id}
+                            disabled={!podeEmprestar(item)}
+                          >
+                            {item.nome} — {descreverDisponibilidade(item)}
                           </SelectItem>
                         ))}
                       </SelectContent>
